@@ -1,0 +1,1 @@
+link da doc - https://medium.com/@salmon.3e/integration-testing-with-nestjs-and-typeorm-2ac3f77e7628
