@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entity/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from '../user.module';
+import { UserEntity } from '../../entity/user.entity';
 
 @Module({
   imports: [
@@ -22,11 +22,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get<string>('POSTGRES_DATABASE'),
         entities: [UserEntity],
         synchronize: true,
+        dropSchema: true,
       }),
     }),
     UserModule,
   ],
-  controllers: [],
-  providers: [],
 })
-export class AppModule {}
+export class TestUserModule {}
