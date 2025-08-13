@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from '../user.module';
-import { UserEntity } from '../../entity/user.entity';
+import { UserModule } from '../src/user/user.module';
+import { UserEntity } from '../src/entity/user.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: '.env.test.integration',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,4 +28,4 @@ import { UserEntity } from '../../entity/user.entity';
     UserModule,
   ],
 })
-export class TestUserModule {}
+export class TestIntegrationModule {}
