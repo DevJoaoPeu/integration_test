@@ -1,98 +1,240 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Integration Tests - User API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Uma API REST para gerenciar usuários com testes de integração completos. Projeto NestJS com PostgreSQL e TypeORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📋 Objetivo do Projeto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este projeto demonstra como implementar uma API REST com **testes de integração de ponta a ponta** usando:
 
-## Project setup
+- **NestJS**: Framework Node.js modular e escalável
+- **PostgreSQL**: Banco de dados relacional
+- **TypeORM**: ORM para gerenciar entidades e queries
+- **Jest**: Framework de testes com cobertura
 
-```bash
-$ yarn install
+O foco é ensinar padrões de testes de integração em uma aplicação real, garantindo que a API funcione corretamente com a base de dados.
+
+---
+
+## 🏗️ Arquitetura
+
+```
+┌─────────────────────────────────────────────┐
+│           Client (HTTP Requests)            │
+└────────────────────┬────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────┐
+│           NestJS Application                │
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌──────────────────────────────────────┐  │
+│  │      UserController (Routes)         │  │
+│  │  GET  /users        (list users)     │  │
+│  │  POST /users        (create user)    │  │
+│  └────────────┬─────────────────────────┘  │
+│               │                             │
+│  ┌────────────▼─────────────────────────┐  │
+│  │      UserService (Business Logic)    │  │
+│  │  - list()                            │  │
+│  │  - create(name)                      │  │
+│  └────────────┬─────────────────────────┘  │
+│               │                             │
+│  ┌────────────▼──────────────────────────┐ │
+│  │   TypeORM Repository (Data Access)   │ │
+│  │   Queries direto no banco de dados   │ │
+│  └────────────┬───────────────────────────┘ │
+│               │                             │
+└───────────────┼─────────────────────────────┘
+                │
+┌───────────────▼─────────────────────────────┐
+│      PostgreSQL Database                    │
+│  ┌────────────────────────────────┐        │
+│  │      users (table)             │        │
+│  │  id (PK) | name                │        │
+│  └────────────────────────────────┘        │
+└─────────────────────────────────────────────┘
 ```
 
-## Compile and run the project
+### Camadas:
+
+1. **Controller** - Recebe requisições HTTP e roteia para o serviço
+2. **Service** - Contém lógica de negócio
+3. **Repository** - Acessa dados via TypeORM
+4. **Entity** - Define estrutura das tabelas
+5. **Config** - Carrega variáveis de ambiente
+
+---
+
+## ⚙️ Instalação
+
+### Pré-requisitos
+
+- **Node.js** v18+
+- **npm** ou **yarn**
+- **PostgreSQL** (local ou container Docker)
+
+### Passo 1: Clonar o Repositório
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+cd ~/Downloads/projetos/pessoal/integration_test
 ```
 
-## Run tests
+### Passo 2: Instalar Dependências
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install
+# ou
+npm install
 ```
 
-## Deployment
+### Passo 3: Configurar o Banco de Dados
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crie um arquivo `.env` na raiz do projeto:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=sua_senha
+POSTGRES_DATABASE=integration_test
+```
+
+#### Opção A: PostgreSQL Local
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+# Instalar PostgreSQL (Ubuntu/Debian)
+sudo apt-get install postgresql postgresql-contrib
+
+# Iniciar o serviço
+sudo systemctl start postgresql
+
+# Criar banco de dados
+sudo -u postgres createdb integration_test
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### Opção B: PostgreSQL com Docker (Recomendado)
 
-## Resources
+```bash
+docker run --name postgres-integration \
+  -e POSTGRES_PASSWORD=sua_senha \
+  -e POSTGRES_DB=integration_test \
+  -p 5432:5432 \
+  -d postgres:16-alpine
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Aguarde ~10 segundos para o banco estar pronto.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Passo 4: Executar a Aplicação
 
-## Support
+```bash
+# Modo desenvolvimento (com auto-reload)
+yarn start:dev
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Modo produção
+yarn build
+yarn start:prod
+```
 
-## Stay in touch
+A API estará disponível em `http://localhost:3000`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 🧪 Testando a API
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Com cURL:
+
+```bash
+# Listar usuários
+curl http://localhost:3000/users
+
+# Criar um novo usuário
+curl -X POST http://localhost:3000/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"João Silva"}'
+```
+
+### Com Insomnia/Postman:
+
+**GET** `http://localhost:3000/users`
+
+**POST** `http://localhost:3000/users`
+```json
+{
+  "name": "João Silva"
+}
+```
+
+---
+
+## 🧪 Rodando Testes
+
+```bash
+# Testes unitários
+yarn test
+
+# Testes em modo watch (reexecuta ao salvar)
+yarn test:watch
+
+# Testes de integração (e2e)
+yarn test:e2e
+
+# Cobertura de testes
+yarn test:cov
+```
+
+O arquivo de testes está em `src/user/__tests__/user.integration.spec.ts`
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── app.module.ts           # Módulo raiz (imports, configs)
+├── main.ts                 # Entry point
+├── entity/
+│   └── user.entity.ts      # Definição da entidade User
+└── user/
+    ├── user.module.ts      # Módulo de User
+    ├── user.controller.ts  # Rotas HTTP
+    ├── user.service.ts     # Lógica de negócio
+    └── __tests__/
+        └── user.integration.spec.ts  # Testes de integração
+```
+
+---
+
+## 📚 Comandos Úteis
+
+```bash
+# Verificar código (linting)
+yarn lint
+
+# Formatar código
+yarn format
+
+# Build para produção
+yarn build
+
+# Modo debug
+yarn start:debug
+```
+
+---
+
+## 🔧 Stack Utilizado
+
+- **Backend**: NestJS 11
+- **Banco de Dados**: PostgreSQL 16
+- **ORM**: TypeORM 0.3
+- **Testes**: Jest 30, Supertest
+- **Linguagem**: TypeScript 5.7
+- **Formatter**: Prettier
+- **Linter**: ESLint
+
+---
+
+## 📝 Licença
+
+UNLICENSED
